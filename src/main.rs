@@ -37,7 +37,7 @@ fn run() -> Result<()> {
 	}
 }
 
-fn pack_cg(args: Cli) -> Result<()> {
+fn pack_cg(_args: Cli) -> Result<()> {
 	todo!()
 }
 
