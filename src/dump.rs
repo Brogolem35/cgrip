@@ -114,7 +114,7 @@ fn draw_sprite(
 
 	for p in image.pixels_mut() {
 		if sprite.type_id == 0 {
-			p.0 = [pal[0], pal[1], pal[2], 0];
+			p.0 = [pal[0], pal[1], pal[2], 255];
 		} else {
 			p.0 = [0, 0, 0, 0]
 		}
