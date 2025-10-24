@@ -84,8 +84,8 @@ impl Sprite {
 }
 
 pub struct TileMap {
-	pub tiles: HashMap<u32, Vec<HashMap<u32, u8>>>,
-	pub alphatiles: HashMap<u32, Vec<HashMap<u32, u8>>>,
+	pub tiles: HashMap<u32, HashMap<u32, Rgba<u8>>>,
+	pub alphatiles: HashMap<u32, HashMap<u32, Rgba<u8>>>,
 	pub num_sheets: u32,
 	pub num_aligns: u32,
 	pub tile_width: u32,
@@ -123,21 +123,18 @@ impl TileMap {
 	}
 
 	pub fn set(&mut self, sheet: u32, x: u32, y: u32, r: u8, g: u8, b: u8, a: u8) {
+		let tmp = x + y * 256;
+		let color = Rgba([r, g, b, a]);
+
 		if self.mode == 0 {
 			match self.tiles.entry(sheet) {
 				std::collections::hash_map::Entry::Occupied(mut view) => {
-					view.get_mut()[0].insert(x + y * 256, r);
-					view.get_mut()[1].insert(x + y * 256, g);
-					view.get_mut()[2].insert(x + y * 256, b);
-					view.get_mut()[3].insert(x + y * 256, a);
+					view.get_mut().insert(tmp, color);
 				}
 				std::collections::hash_map::Entry::Vacant(view) => {
-					let mut new = vec![HashMap::new(); 4];
-
-					new[0].insert(x + y * 256, r);
-					new[1].insert(x + y * 256, g);
-					new[2].insert(x + y * 256, b);
-					new[3].insert(x + y * 256, a);
+					let new = HashMap::new().tap_mut(|h| {
+						h.insert(tmp, color);
+					});
 
 					view.insert(new);
 				}
@@ -145,18 +142,12 @@ impl TileMap {
 		} else {
 			match self.alphatiles.entry(sheet) {
 				std::collections::hash_map::Entry::Occupied(mut view) => {
-					view.get_mut()[0].insert(x + y * 256, r);
-					view.get_mut()[1].insert(x + y * 256, g);
-					view.get_mut()[2].insert(x + y * 256, b);
-					view.get_mut()[3].insert(x + y * 256, a);
+					view.get_mut().insert(tmp, color);
 				}
 				std::collections::hash_map::Entry::Vacant(view) => {
-					let mut new = vec![HashMap::new(); 4];
-
-					new[0].insert(x + y * 256, r);
-					new[1].insert(x + y * 256, g);
-					new[2].insert(x + y * 256, b);
-					new[3].insert(x + y * 256, a);
+					let new = HashMap::new().tap_mut(|h| {
+						h.insert(tmp, color);
+					});
 
 					view.insert(new);
 				}
@@ -165,18 +156,34 @@ impl TileMap {
 	}
 
 	pub fn set_alpha(&mut self, sheet: u32, x: u32, y: u32, a: u8) {
-		self.alphatiles.entry(sheet).and_modify(|v| {
-			v[3].insert(x + y * 256, a);
-		});
+		let tmp = x + y * 256;
+
+		// ??? Is defaulting to Rgba([0, 0, 0, a]) right?
+		match self.alphatiles.entry(sheet) {
+			std::collections::hash_map::Entry::Occupied(mut view) => {
+				match view.get_mut().entry(tmp) {
+					std::collections::hash_map::Entry::Occupied(mut view) => {
+						view.get_mut().0[3] = a;
+					}
+					std::collections::hash_map::Entry::Vacant(view) => {
+						view.insert(Rgba([0, 0, 0, a]));
+					}
+				}
+			}
+			std::collections::hash_map::Entry::Vacant(view) => {
+				let new = HashMap::new().tap_mut(|h| {
+					h.insert(tmp, Rgba([0, 0, 0, a]));
+				});
+
+				view.insert(new);
+			}
+		}
 	}
 
 	pub fn get(&self, sheet: u32, x: u32, y: u32) -> Rgba<u8> {
-		let r = self.tiles[&sheet][0][&(x + y * 256)];
-		let g = self.tiles[&sheet][1][&(x + y * 256)];
-		let b = self.tiles[&sheet][2][&(x + y * 256)];
-		let a = self.tiles[&sheet][3][&(x + y * 256)];
+		let tmp = x + y * 256;
 
-		Rgba([r, g, b, a])
+		self.tiles[&sheet][&tmp]
 	}
 }
 
