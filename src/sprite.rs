@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map};
 
 use bytes::Buf;
 use encoding_rs::SHIFT_JIS;
@@ -126,32 +126,31 @@ impl TileMap {
 		let tmp = x + y * 256;
 		let color = Rgba([r, g, b, a]);
 
-		if self.mode == 0 {
-			match self.tiles.entry(sheet) {
-				std::collections::hash_map::Entry::Occupied(mut view) => {
+		match self.mode == 0 {
+			true => match self.tiles.entry(sheet) {
+				hash_map::Entry::Occupied(mut view) => {
 					view.get_mut().insert(tmp, color);
 				}
-				std::collections::hash_map::Entry::Vacant(view) => {
+				hash_map::Entry::Vacant(view) => {
 					let new = HashMap::new().tap_mut(|h| {
 						h.insert(tmp, color);
 					});
 
 					view.insert(new);
 				}
-			}
-		} else {
-			match self.alphatiles.entry(sheet) {
-				std::collections::hash_map::Entry::Occupied(mut view) => {
+			},
+			false => match self.alphatiles.entry(sheet) {
+				hash_map::Entry::Occupied(mut view) => {
 					view.get_mut().insert(tmp, color);
 				}
-				std::collections::hash_map::Entry::Vacant(view) => {
+				hash_map::Entry::Vacant(view) => {
 					let new = HashMap::new().tap_mut(|h| {
 						h.insert(tmp, color);
 					});
 
 					view.insert(new);
 				}
-			}
+			},
 		}
 	}
 
@@ -160,17 +159,15 @@ impl TileMap {
 
 		// ??? Is defaulting to Rgba([0, 0, 0, a]) right?
 		match self.alphatiles.entry(sheet) {
-			std::collections::hash_map::Entry::Occupied(mut view) => {
-				match view.get_mut().entry(tmp) {
-					std::collections::hash_map::Entry::Occupied(mut view) => {
-						view.get_mut().0[3] = a;
-					}
-					std::collections::hash_map::Entry::Vacant(view) => {
-						view.insert(Rgba([0, 0, 0, a]));
-					}
+			hash_map::Entry::Occupied(mut view) => match view.get_mut().entry(tmp) {
+				hash_map::Entry::Occupied(mut view) => {
+					view.get_mut().0[3] = a;
 				}
-			}
-			std::collections::hash_map::Entry::Vacant(view) => {
+				hash_map::Entry::Vacant(view) => {
+					view.insert(Rgba([0, 0, 0, a]));
+				}
+			},
+			hash_map::Entry::Vacant(view) => {
 				let new = HashMap::new().tap_mut(|h| {
 					h.insert(tmp, Rgba([0, 0, 0, a]));
 				});
