@@ -12,7 +12,7 @@ use crate::{
 	sprite::{Align, Sprite, TileMap},
 };
 use anyhow::{Result, bail, ensure};
-use image::{ExtendedColorType, ImageFormat, RgbaImage, save_buffer_with_format};
+use image::{ExtendedColorType, ImageFormat, Rgba, RgbaImage, save_buffer_with_format};
 use tap::prelude::*;
 
 pub fn dump_cg(args: Cli) -> Result<()> {
@@ -114,9 +114,9 @@ fn draw_sprite(
 
 	for p in image.pixels_mut() {
 		if sprite.type_id == 0 {
-			p.0 = [pal[0], pal[1], pal[2], 255];
+			*p = Rgba([pal[0], pal[1], pal[2], 255]);
 		} else {
-			p.0 = [0, 0, 0, 0]
+			*p = Rgba([0, 0, 0, 0])
 		}
 	}
 
