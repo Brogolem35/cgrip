@@ -135,7 +135,7 @@ fn draw_sprite(
 			let dval = sprite.values[j] as usize;
 
 			// TODO: Clean this up. Like... WTF?
-			if align.backref == 0 {
+			if !align.backref {
 				if sprite.bpp == 8 {
 					tm.set(
 						align.source_img,
@@ -209,7 +209,7 @@ fn draw_sprite(
 			*image.get_pixel_mut(xval, yval) = pix;
 		}
 
-		if sprite.type_id == 4 && align.backref == 0 {
+		if sprite.type_id == 4 && !align.backref {
 			for e in 0..nval {
 				let dval = sprite.values[j];
 

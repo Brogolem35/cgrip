@@ -195,7 +195,7 @@ pub struct Align {
 	pub source_x: u32,
 	pub source_y: u32,
 	pub source_img: u32,
-	pub backref: u32,
+	pub backref: bool,
 }
 
 impl Align {
@@ -213,7 +213,7 @@ impl Align {
 			source_x: data.get_u16_le() as u32,
 			source_y: data.get_u16_le() as u32,
 			source_img: data.get_u16_le() as u32,
-			backref: data.get_u16_le() as u32,
+			backref: data.get_u16_le() != 0,
 		}
 	}
 }
