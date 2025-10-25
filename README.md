@@ -10,8 +10,6 @@ This is an almost line by line reimplemtation of the cgpack script, whose most u
 
 - It is only tested on MBAACC on Linux. Further testing would be appreciated.
 
-- Sprites with type_id of 4 have artifacts.
-
 - Packaging resources is not implemented yet.
 
 - `--tile_width` argument does nothing.
