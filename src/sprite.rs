@@ -122,9 +122,8 @@ impl TileMap {
 		}
 	}
 
-	pub fn set(&mut self, sheet: u32, x: u32, y: u32, r: u8, g: u8, b: u8, a: u8) {
+	pub fn set(&mut self, sheet: u32, x: u32, y: u32, color: Rgba<u8>) {
 		let tmp = x + y * 256;
-		let color = Rgba([r, g, b, a]);
 
 		match self.mode == 0 {
 			true => match self.tiles.entry(sheet) {
