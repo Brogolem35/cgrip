@@ -129,6 +129,7 @@ fn draw_sprite(
 		let align = Align::new(sprite, m_align, i);
 		let nval = align.width * align.height;
 
+		tm.reserve(nval as usize);
 		for e in 0..nval {
 			let source_xval = align.source_x + (e % align.width);
 			let source_yval = align.source_y + e / align.width;

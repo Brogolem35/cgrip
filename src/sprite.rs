@@ -161,7 +161,7 @@ impl TileMap {
 	}
 
 	pub fn set(&mut self, sheet: u32, x: u32, y: u32, color: Rgba<u8>) {
-		let tmp = x + y * 256;
+		let tmp = Self::coord_2_linear(x, y);
 
 		match self.mode == 0 {
 			true => match self.tiles.entry(sheet) {
@@ -192,7 +192,7 @@ impl TileMap {
 	}
 
 	pub fn set_alpha(&mut self, sheet: u32, x: u32, y: u32, a: u8) {
-		let tmp = x + y * 256;
+		let tmp = Self::coord_2_linear(x, y);
 
 		// ??? Is defaulting to Rgba([0, 0, 0, a]) right?
 		match self.alphatiles.entry(sheet) {
@@ -215,9 +215,19 @@ impl TileMap {
 	}
 
 	pub fn get(&self, sheet: u32, x: u32, y: u32) -> Rgba<u8> {
-		let tmp = x + y * 256;
+		let tmp = Self::coord_2_linear(x, y);
 
 		self.tiles[&sheet][&tmp]
+	}
+
+	pub fn reserve(&mut self, amount: usize) {
+		self.tiles.reserve(amount);
+		self.alphatiles.reserve(amount);
+	}
+
+	#[inline(always)]
+	fn coord_2_linear(x: u32, y: u32) -> u32 {
+		x + y * 256
 	}
 }
 
