@@ -3,12 +3,11 @@ mod dump;
 mod sprite;
 mod warning;
 
-use std::{collections::HashSet, hash::Hash, process::ExitCode};
+use std::process::ExitCode;
 
 use crate::{cli::Cli, dump::dump_cg, warning::warning_printed};
 use anyhow::Result;
 use clap::Parser;
-use std::collections::HashMap;
 
 enum Return {
 	Ok = 0,
