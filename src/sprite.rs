@@ -1,4 +1,7 @@
-use std::{borrow::Cow, collections::{HashMap, hash_map}};
+use std::{
+	borrow::Cow,
+	collections::{HashMap, hash_map},
+};
 
 use bytes::Buf;
 use encoding_rs::SHIFT_JIS;
@@ -23,8 +26,8 @@ pub struct Sprite<'a> {
 	pub g: u8,
 	pub b: u8,
 	pub a: u8,
-	pub values: Vec<u8>,
-	pub cpal: Vec<u8>,
+	pub values: &'a [u8],
+	pub cpal: &'a [u8],
 }
 
 impl<'a> Sprite<'a> {
@@ -49,13 +52,13 @@ impl<'a> Sprite<'a> {
 
 		match s.type_id {
 			1 => {
-				s.values = data[..((s.width * s.height * 4) as usize)].to_vec();
+				s.values = &data[..((s.width * s.height * 4) as usize)];
 			}
 			2 => {
-				s.cpal = data[..1024].to_vec();
+				s.cpal = data[..1024].into();
 				data = &data[1024..];
 
-				s.values = data[..((s.width * s.height) as usize)].to_vec();
+				s.values = &data[..((s.width * s.height) as usize)];
 			}
 			3 => {
 				s.r = data.get_u8();
@@ -63,16 +66,16 @@ impl<'a> Sprite<'a> {
 				s.b = data.get_u8();
 				s.a = data.get_u8();
 
-				s.values = data[..((s.width * s.height) as usize)].to_vec();
+				s.values = &data[..((s.width * s.height) as usize)];
 			}
 			4 => {
-				s.cpal = data[..1024].to_vec();
+				s.cpal = &data[..1024];
 				data = &data[1024..];
 
-				s.values = data[..((s.width * s.height * 2) as usize)].to_vec();
+				s.values = &data[..((s.width * s.height * 2) as usize)];
 			}
 			_ => {
-				s.values = data[..((s.width * s.height - 72) as usize)].to_vec();
+				s.values = &data[..((s.width * s.height - 72) as usize)];
 			}
 		}
 
