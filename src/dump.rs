@@ -116,7 +116,7 @@ fn draw_sprite(
 		if sprite.type_id == 0 {
 			*p = Rgba([pal[0], pal[1], pal[2], 255]);
 		} else {
-			*p = Rgba([0, 0, 0, 0])
+			*p = Rgba([0, 0, 0, 0]);
 		}
 	}
 
@@ -132,48 +132,9 @@ fn draw_sprite(
 		for e in 0..nval {
 			let source_xval = align.source_x + (e % align.width);
 			let source_yval = align.source_y + e / align.width;
-			let dval = sprite.values[j] as usize;
 
-			// TODO: Clean this up. Like... WTF?
 			if !align.backref {
-				let color = if sprite.bpp == 8 {
-					Rgba([
-						pal[dval * 4],
-						pal[dval * 4 + 1],
-						pal[dval * 4 + 2],
-						255,
-					])
-				} else if sprite.type_id == 1 {
-					// 32bpp bgra
-					let b = sprite.values[j];
-					let g = sprite.values[j + 1];
-					let r = sprite.values[j + 2];
-					let a = sprite.values[j + 3];
-					j += 3;
-					Rgba([r, g, b, a])
-				} else if sprite.type_id == 2 {
-					// custom pallete no alpha
-					Rgba([
-						sprite.cpal[dval * 4],
-						sprite.cpal[dval * 4 + 1],
-						sprite.cpal[dval * 4 + 2],
-						255,
-					])
-				} else if sprite.type_id == 3 {
-					// eff based color
-					Rgba([sprite.r, sprite.g, sprite.b, dval as u8])
-				} else if sprite.type_id == 4 {
-					// custom pallete alpha
-					Rgba([
-						sprite.cpal[dval * 4],
-						sprite.cpal[dval * 4 + 1],
-						sprite.cpal[dval * 4 + 2],
-						255,
-					])
-				} else {
-					bail!("unhandled type");
-				};
-
+				let color = sprite.next_color(pal, &mut j)?;
 				tm.set(align.source_img, source_xval, source_yval, color);
 				j += 1;
 			}

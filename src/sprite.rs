@@ -3,6 +3,7 @@ use std::{
 	collections::{HashMap, hash_map},
 };
 
+use anyhow::{Result, bail};
 use bytes::Buf;
 use encoding_rs::SHIFT_JIS;
 use image::Rgba;
@@ -80,6 +81,45 @@ impl<'a> Sprite<'a> {
 		}
 
 		s
+	}
+
+	pub fn next_color(&self, pal: &[u8], dval_index: &mut usize) -> Result<Rgba<u8>> {
+		let dval = self.values[*dval_index] as usize;
+
+		let res = if self.bpp == 8 {
+			Rgba([pal[dval * 4], pal[dval * 4 + 1], pal[dval * 4 + 2], 255])
+		} else if self.type_id == 1 {
+			// 32bpp bgra
+			let b = self.values[*dval_index];
+			let g = self.values[*dval_index + 1];
+			let r = self.values[*dval_index + 2];
+			let a = self.values[*dval_index + 3];
+			*dval_index += 3;
+			Rgba([r, g, b, a])
+		} else if self.type_id == 2 {
+			// custom pallete no alpha
+			Rgba([
+				self.cpal[dval * 4],
+				self.cpal[dval * 4 + 1],
+				self.cpal[dval * 4 + 2],
+				255,
+			])
+		} else if self.type_id == 3 {
+			// eff based color
+			Rgba([self.r, self.g, self.b, dval as u8])
+		} else if self.type_id == 4 {
+			// custom pallete alpha
+			Rgba([
+				self.cpal[dval * 4],
+				self.cpal[dval * 4 + 1],
+				self.cpal[dval * 4 + 2],
+				255,
+			])
+		} else {
+			bail!("unhandled type");
+		};
+
+		Ok(res)
 	}
 }
 
