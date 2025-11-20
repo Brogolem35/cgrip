@@ -137,12 +137,15 @@ fn draw_sprite(
 			let source_xval = align.source_x + (e % align.width);
 			let source_yval = align.source_y + e / align.width;
 
-			if !align.backref {
+			let pix = if !align.backref {
 				let color = sprite.next_color(pal, &mut j)?;
 				tm.set(align.source_img, source_xval, source_yval, color);
 				j += 1;
-			}
-			let pix = tm.get(align.source_img, source_xval, source_yval);
+
+				color
+			} else {
+				tm.get(align.source_img, source_xval, source_yval)
+			};
 
 			let xval = align.x + e % align.width;
 			let yval = align.y + e / align.width;
