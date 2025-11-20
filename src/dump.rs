@@ -166,7 +166,7 @@ fn draw_sprite(
 		}
 	}
 
-	let path = PathBuf::from(out_path)
+	let mut path = PathBuf::from(out_path)
 		.tap_mut(|p| p.push(&*sprite.filename))
 		.tap_mut(|p| {
 			p.set_extension("bmp.png");
@@ -189,11 +189,7 @@ fn draw_sprite(
 	if sprite.type_id == 2 || sprite.type_id == 4 {
 		ensure!(sprite.cpal.len() == 1024);
 
-		let path = PathBuf::from(out_path)
-			.tap_mut(|p| p.push(&*sprite.filename))
-			.tap_mut(|p| {
-				p.set_extension("bmp.cpal");
-			});
+		path.set_extension("cpal");
 
 		let mut f = OpenOptions::new()
 			.create(true)
@@ -204,11 +200,7 @@ fn draw_sprite(
 		f.write_all(&sprite.cpal)?;
 
 		if sprite.type_id == 4 {
-			let path = PathBuf::from(out_path)
-				.tap_mut(|p| p.push(&*sprite.filename))
-				.tap_mut(|p| {
-					p.set_extension("bmp.t4");
-				});
+			path.set_extension("t4");
 
 			let mut f = OpenOptions::new()
 				.create(true)
@@ -219,11 +211,7 @@ fn draw_sprite(
 			f.write_all(b"4")?;
 		}
 	} else if sprite.type_id == 3 {
-		let path = PathBuf::from(out_path)
-			.tap_mut(|p| p.push(&*sprite.filename))
-			.tap_mut(|p| {
-				p.set_extension("bmp.eff");
-			});
+		path.set_extension("t4");
 
 		let mut f = OpenOptions::new()
 			.create(true)
