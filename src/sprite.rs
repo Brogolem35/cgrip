@@ -1,11 +1,9 @@
-use std::{
-	borrow::Cow,
-	collections::{HashMap, hash_map},
-};
+use std::borrow::Cow;
 
 use anyhow::{Result, bail};
 use bytes::Buf;
 use encoding_rs::SHIFT_JIS;
+use hashbrown::{HashMap, hash_map};
 use image::Rgba;
 use tap::prelude::*;
 
