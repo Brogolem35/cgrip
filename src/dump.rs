@@ -202,7 +202,7 @@ fn draw_sprite(
 	}
 
 	let path = PathBuf::from(out_path)
-		.tap_mut(|p| p.push(&sprite.filename))
+		.tap_mut(|p| p.push(&*sprite.filename))
 		.tap_mut(|p| {
 			p.set_extension("bmp.png");
 		});
@@ -220,7 +220,7 @@ fn draw_sprite(
 		ensure!(sprite.cpal.len() == 1024);
 
 		let path = PathBuf::from(out_path)
-			.tap_mut(|p| p.push(&sprite.filename))
+			.tap_mut(|p| p.push(&*sprite.filename))
 			.tap_mut(|p| {
 				p.set_extension("bmp.cpal");
 			});
@@ -235,7 +235,7 @@ fn draw_sprite(
 
 		if sprite.type_id == 4 {
 			let path = PathBuf::from(out_path)
-				.tap_mut(|p| p.push(&sprite.filename))
+				.tap_mut(|p| p.push(&*sprite.filename))
 				.tap_mut(|p| {
 					p.set_extension("bmp.t4");
 				});
@@ -250,7 +250,7 @@ fn draw_sprite(
 		}
 	} else if sprite.type_id == 3 {
 		let path = PathBuf::from(out_path)
-			.tap_mut(|p| p.push(&sprite.filename))
+			.tap_mut(|p| p.push(&*sprite.filename))
 			.tap_mut(|p| {
 				p.set_extension("bmp.eff");
 			});

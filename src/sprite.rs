@@ -1,4 +1,4 @@
-use std::collections::{HashMap, hash_map};
+use std::{borrow::Cow, collections::{HashMap, hash_map}};
 
 use bytes::Buf;
 use encoding_rs::SHIFT_JIS;
@@ -6,9 +6,9 @@ use image::Rgba;
 use tap::prelude::*;
 
 #[derive(Default)]
-pub struct Sprite {
+pub struct Sprite<'a> {
 	pub index: u32,
-	pub filename: String,
+	pub filename: Cow<'a, str>,
 	pub type_id: i32,
 	pub bounds_x1: u32,
 	pub bounds_x2: u32,
@@ -27,15 +27,12 @@ pub struct Sprite {
 	pub cpal: Vec<u8>,
 }
 
-impl Sprite {
-	pub fn new(mut data: &[u8], index: usize) -> Self {
+impl<'a> Sprite<'a> {
+	pub fn new(mut data: &'a [u8], index: usize) -> Self {
 		let mut s = Sprite::default();
 		s.index = index as u32;
 
-		s.filename = SHIFT_JIS
-			.decode(&data[..32])
-			.0
-			.pipe(|x| x.trim_matches('\0').to_string());
+		s.filename = SHIFT_JIS.decode(&data[..32]).0;
 
 		data = &data[32..];
 		s.type_id = data.get_i32_le();
