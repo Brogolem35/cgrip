@@ -12,7 +12,10 @@ use crate::{
 	sprite::{Align, Sprite, TileMap},
 };
 use anyhow::{Result, bail, ensure};
-use image::{ExtendedColorType, ImageFormat, Rgba, RgbaImage, save_buffer_with_format};
+use image::{
+	ExtendedColorType, ImageEncoder, Rgba, RgbaImage,
+	codecs::png::{CompressionType, FilterType, PngEncoder},
+};
 use tap::prelude::*;
 
 pub fn dump_cg(args: Cli) -> Result<()> {
@@ -169,13 +172,18 @@ fn draw_sprite(
 			p.set_extension("bmp.png");
 		});
 
-	save_buffer_with_format(
-		&path,
+	let f = OpenOptions::new()
+		.create(true)
+		.truncate(true)
+		.write(true)
+		.open(&path)?;
+
+	let e = PngEncoder::new_with_quality(f, CompressionType::Fast, FilterType::Adaptive);
+	e.write_image(
 		&image,
 		image.width(),
 		image.height(),
 		ExtendedColorType::Rgba8,
-		ImageFormat::Png,
 	)?;
 
 	if sprite.type_id == 2 || sprite.type_id == 4 {
