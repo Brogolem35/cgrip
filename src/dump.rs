@@ -200,7 +200,7 @@ fn draw_sprite(
 			.write(true)
 			.open(&path)?;
 
-		f.write_all(&sprite.cpal)?;
+		f.write_all(sprite.cpal)?;
 
 		if sprite.type_id == 4 {
 			path.set_extension("t4");

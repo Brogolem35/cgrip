@@ -121,6 +121,7 @@ impl<'a> Sprite<'a> {
 	}
 }
 
+#[allow(unused)]
 pub struct TileMap {
 	pub tiles: HashMap<u32, HashMap<u32, Rgba<u8>>>,
 	pub alphatiles: HashMap<u32, HashMap<u32, Rgba<u8>>>,

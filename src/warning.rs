@@ -10,6 +10,7 @@ macro_rules! wprintln {
         };
 }
 
+#[allow(unused)]
 #[inline]
 pub fn set_warning(b: bool) {
 	WARNING_PRINTED.store(b, Ordering::SeqCst);
