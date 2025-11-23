@@ -1,9 +1,8 @@
 use std::{
-	ffi::{OsStr, OsString},
+	ffi::OsStr,
 	fs::{self, OpenOptions},
 	io::{self, Write},
-	path::PathBuf,
-	str::FromStr,
+	path::{Path, PathBuf},
 };
 
 use crate::{
@@ -19,28 +18,25 @@ use image::{
 use tap::prelude::*;
 
 pub fn dump_cg(args: Cli) -> Result<()> {
-	let path = args.path;
-	let path_utf8 = match path.clone().into_string() {
-		Ok(s) => s,
-		Err(_) => bail!("Path is not valid unicode"),
-	};
+	let path = PathBuf::from(args.path);
 
 	ensure!(
-		path_utf8.ends_with(".cg"),
+		path.extension().map(|e| e.eq("cg")).unwrap_or(false),
 		"File to be dumped must have .cg extension"
 	);
 
 	let data = read_cg(&path)?;
-	let out_path = output_folder(&path_utf8)?;
+	let out_path = output_folder(&path)?;
 	let pal = dump_pal(&data, &out_path)?;
 	dump_sprites(&data, pal, &out_path)?;
 
 	Ok(())
 }
 
-fn dump_pal<'a>(data: &'a [u8], out_path: &'a OsStr) -> Result<&'a [u8]> {
+fn dump_pal<'a>(data: &'a [u8], out_path: impl AsRef<Path>) -> Result<&'a [u8]> {
+	let out_path = out_path.as_ref();
 	let out_path = PathBuf::from(out_path)
-		.tap_mut(|a| a.push(out_path))
+		.tap_mut(|a| a.push(out_path.file_name().unwrap()))
 		.tap_mut(|a| {
 			a.set_extension("pal");
 		});
@@ -88,19 +84,17 @@ fn dump_sprites(data: &[u8], pal: &[u8], out_path: &OsStr) -> Result<()> {
 	Ok(())
 }
 
-fn read_cg(path: &OsStr) -> Result<Vec<u8>> {
+fn read_cg(path: impl AsRef<Path>) -> Result<Vec<u8>> {
 	Ok(fs::read(path)?)
 }
 
-fn output_folder(path_utf8: &str) -> Result<OsString> {
-	let path_len = path_utf8.len();
-	let ext_offset = path_len - ".cg".len();
-	let output_path = &path_utf8[..ext_offset];
+fn output_folder(path: &impl AsRef<Path>) -> Result<&OsStr> {
+	let output_path = path.as_ref().file_prefix().unwrap();
 
 	match fs::create_dir(output_path) {
-		Ok(_) => Ok(OsString::from_str(output_path)?),
+		Ok(_) => Ok(output_path),
 		Err(e) => match e.kind() {
-			io::ErrorKind::AlreadyExists => Ok(OsString::from_str(output_path)?),
+			io::ErrorKind::AlreadyExists => Ok(output_path),
 			x => bail!("Error creating the output directory: {x}"),
 		},
 	}
