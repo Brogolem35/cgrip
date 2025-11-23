@@ -226,6 +226,29 @@ impl TileMap {
 		self.alphatiles.reserve(amount);
 	}
 
+	pub fn reserve_tile(&mut self, sheet: u32, amount: usize) {
+		match self.mode == 0 {
+			true => match self.tiles.entry(sheet) {
+				hash_map::Entry::Occupied(mut view) => {
+					view.get_mut().reserve(amount);
+				}
+				hash_map::Entry::Vacant(view) => {
+					let new = HashMap::with_capacity(amount);
+					view.insert(new);
+				}
+			},
+			false => match self.alphatiles.entry(sheet) {
+				hash_map::Entry::Occupied(mut view) => {
+					view.get_mut().reserve(amount);
+				}
+				hash_map::Entry::Vacant(view) => {
+					let new = HashMap::with_capacity(amount);
+					view.insert(new);
+				}
+			},
+		}
+	}
+
 	#[inline(always)]
 	fn coord_2_linear(x: u32, y: u32) -> u32 {
 		x + y * 256

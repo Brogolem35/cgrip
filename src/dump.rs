@@ -121,12 +121,13 @@ fn draw_sprite(
 	println!("sprite.type_id: {}", sprite.type_id);
 
 	let mut j = 0;
+	tm.reserve(sprite.align_len as usize);
 	for i in 0..sprite.align_len {
 		let i = i as usize;
 		let align = Align::new(sprite, m_align, i);
 		let nval = align.width * align.height;
 
-		tm.reserve(nval as usize);
+		tm.reserve_tile(align.source_img, nval as usize);
 		for e in 0..nval {
 			let source_xval = align.source_x + (e % align.width);
 			let source_yval = align.source_y + e / align.width;
